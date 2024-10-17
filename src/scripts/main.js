@@ -1,37 +1,39 @@
 'use strict';
 
-const listSalary = [...document.querySelectorAll('li')];
+const salaryList = [...document.querySelectorAll('li')];
 
+// функція для перетворення зарплати з рядка в число
 function parseSalary(salaryStr) {
   return parseInt(salaryStr.replace(/[$,]/g, ''), 10);
 }
 
-function sortList(list) {
-  return list.sort((a, b) => {
-    const salaryA = parseSalary(a.getAttribute('data-salary'));
-    const salaryB = parseSalary(b.getAttribute('data-salary'));
-
-    return salaryB - salaryA;
-  });
-}
-
 function getEmployees(list) {
-  return list.map((item) => {
-    return {
-      name: item.textContent.trim(),
-      position: item.getAttribute('data-position'),
-      salary: parseSalary(item.getAttribute('data-salary')),
-      age: parseInt(item.getAttribute('data-age'), 10),
-    };
-  });
+  return list.map((item) => ({
+    name: item.textContent.trim(),
+    position: item.getAttribute('data-position'),
+    salary: parseSalary(item.getAttribute('data-salary')),
+    age: parseInt(item.getAttribute('data-age'), 10),
+  }));
 }
 
-const sortedItems = sortList(listSalary);
+function sortList(employees) {
+  return employees.sort((a, b) => b.salary - a.salary);
+}
+
+const employe = getEmployees(salaryList);
+
+const sortedEmployees = sortList(employe);
 
 const ul = document.querySelector('ul');
 
 ul.innerHTML = '';
 
-sortedItems.forEach((item) => ul.appendChild(item));
+sortedEmployees.forEach((employee) => {
+  const li = document.createElement('li');
 
-getEmployees(listSalary);
+  li.textContent = `${employee.name}`;
+  li.setAttribute('data-position', employee.position);
+  li.setAttribute('data-salary', `$${employee.salary.toLocaleString()}`);
+  li.setAttribute('data-age', employee.age);
+  ul.appendChild(li);
+});
